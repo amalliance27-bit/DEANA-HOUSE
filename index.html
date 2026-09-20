@@ -1265,7 +1265,7 @@ h2 em { color: var(--gold-light); font-weight: 500; }
     </form>
   </dialog>
 
-  <audio data-background-music loop autoplay muted playsinline preload="auto" src="media/asset-16142e34.mp3" aria-label="Background music: Maybe"></audio>
+  <audio data-background-music loop playsinline preload="none" src="media/asset-16142e34.mp3" aria-label="Background music: Maybe"></audio>
   <button class="music-control" data-music-control type="button" hidden>Play music</button>
   <script>
 const header = document.querySelector("[data-header]");
@@ -1534,12 +1534,10 @@ tickerToggle?.addEventListener('click', () => {
   music.playbackRate = 1;
   music.preservesPitch = true;
   music.addEventListener('ratechange', () => { if(music.playbackRate !== 1) music.playbackRate = 1; });
-  let ready = true, stopped = false, starting = false, pendingUnmute = true;
-  // Browsers forbid audible autoplay, but muted autoplay is allowed: roll the track
-  // silently from load so the first tap, key or scroll only has to unmute it.
-  music.muted = true;
+  let ready = true, stopped = false, starting = false, pendingUnmute = false;
+  // No autoplay: the soundtrack stays silent until the visitor presses the control.
+  music.muted = false;
   control.hidden = false; control.textContent = 'Play music';
-  music.play().then(() => { if (!stopped) { control.hidden = false; control.textContent = 'Play music'; } }).catch(() => {});
   let fadeFrame = 0, context = null, gain = null, source = null;
   const foregroundActive = () => [...document.querySelectorAll('audio,video')].some(media => media !== music && !media.paused && !media.ended);
   function prepareGain() {
@@ -1604,26 +1602,12 @@ tickerToggle?.addEventListener('click', () => {
     if (music.paused) { start(); return; }
     control.hidden = false; control.textContent = 'Mute music';
   }
-  window.addEventListener('built-scroll-ready', () => { ready = true; start(); });
+  window.addEventListener('built-scroll-ready', () => { ready = true; });
   document.addEventListener('play', event => {
     if (event.target !== music && event.target.matches?.('audio,video')) fadeOut();
   }, true);
-  // Native audio/video controls can trigger playback after this gesture.
-  function gesture(event) {
-    if (event.target.closest?.('audio,video,[data-music-control]')) return;
-    if (event.type === 'keydown' && !['Enter',' '].includes(event.key)) return;
-    if (stopped) return;
-    prepareGain();
-    if (pendingUnmute) unmute(); else start();
-  }
-  document.addEventListener('pointerdown', gesture);
-  document.addEventListener('keydown', gesture);
-  document.addEventListener('touchstart', gesture, { passive: true });
-  window.addEventListener('built-splash-enter', () => { if (!stopped) { prepareGain(); if (pendingUnmute) unmute(); else start(); } });
-  // Deliberately no scroll hook: the intro animates the page itself, and that
-  // programmatic scroll used to trip the unmute before any real gesture existed,
-  // which left the track paused and audible-blocked instead of rolling silently.
-  window.addEventListener('wheel', gesture, { passive: true });
+  // No gesture, splash or scroll hook starts the soundtrack: only the pink
+  // control below does, so the page is always silent on arrival.
   // The pink button is the visitor's direct control: a click is a real gesture, so
   // playback is always permitted here. It never routes through the autoplay
   // fallbacks, and pausing with it is reversible (unlike the one-way fade used
@@ -1649,8 +1633,6 @@ tickerToggle?.addEventListener('click', () => {
       control.textContent = 'Play music';
     }
   });
-  if (ready) start();
-  document.addEventListener('DOMContentLoaded', () => { if (!stopped && music.paused) start(); });
 })();
 
 </script>
