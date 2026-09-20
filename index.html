@@ -1619,7 +1619,10 @@ tickerToggle?.addEventListener('click', () => {
   document.addEventListener('keydown', gesture);
   document.addEventListener('touchstart', gesture, { passive: true });
   window.addEventListener('built-splash-enter', () => { if (!stopped) { prepareGain(); if (pendingUnmute) unmute(); else start(); } });
-  window.addEventListener('scroll', () => { if (!stopped) { prepareGain(); if (pendingUnmute) unmute(); else start(); } }, { passive: true, once: true });
+  // Deliberately no scroll hook: the intro animates the page itself, and that
+  // programmatic scroll used to trip the unmute before any real gesture existed,
+  // which left the track paused and audible-blocked instead of rolling silently.
+  window.addEventListener('wheel', gesture, { passive: true });
   control.addEventListener('click', () => {
     if (pendingUnmute) { prepareGain(); unmute(); return; }
     if (!music.paused && !music.muted) fadeOut(); else { prepareGain(); music.muted = false; start(); }
