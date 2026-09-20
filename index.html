@@ -792,7 +792,7 @@ h2 em { color: var(--gold-light); font-weight: 500; }
   <div class="welcome-splash" data-splash role="dialog" aria-label="Welcome to Built by D" aria-modal="true">
     <div class="splash-photo"></div><div class="splash-shade"></div>
     <div class="splash-copy"><p class="eyebrow">Precision Physique · Deana Brady</p><h1>BUILT BY D</h1><p class="splash-tagline">Stronger at every age.</p><span class="splash-line" aria-hidden="true"></span>
-      <p class="splash-note">Best experienced with sound</p></div>
+      <p class="splash-note">Tap anywhere for sound</p></div>
   </div>
   <a class="skip-link" href="#home-view">Skip to content</a>
 
@@ -1265,7 +1265,7 @@ h2 em { color: var(--gold-light); font-weight: 500; }
     </form>
   </dialog>
 
-  <audio data-background-music loop autoplay preload="auto" src="media/asset-16142e34.mp3" aria-label="Background music: Maybe"></audio>
+  <audio data-background-music loop autoplay muted playsinline preload="auto" src="media/asset-16142e34.mp3" aria-label="Background music: Maybe"></audio>
   <button class="music-control" data-music-control type="button" hidden>Play music</button>
   <script>
 const header = document.querySelector("[data-header]");
@@ -1534,7 +1534,11 @@ tickerToggle?.addEventListener('click', () => {
   music.playbackRate = 1;
   music.preservesPitch = true;
   music.addEventListener('ratechange', () => { if(music.playbackRate !== 1) music.playbackRate = 1; });
-  let ready = true, stopped = false, starting = false, pendingUnmute = false;
+  let ready = true, stopped = false, starting = false, pendingUnmute = true;
+  // Browsers forbid audible autoplay, but muted autoplay is allowed: roll the track
+  // silently from load so the first tap, key or scroll only has to unmute it.
+  music.muted = true;
+  music.play().then(() => { if (!stopped) { control.hidden = false; control.textContent = 'Play music'; } }).catch(() => {});
   let fadeFrame = 0, context = null, gain = null, source = null;
   const foregroundActive = () => [...document.querySelectorAll('audio,video')].some(media => media !== music && !media.paused && !media.ended);
   function prepareGain() {
