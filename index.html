@@ -645,7 +645,7 @@ h2 em { color: var(--gold-light); font-weight: 500; }
 
 /* Keep the hero copy and audio panel within a readable column. */
 .hero-content { min-width: 0; padding-top: 9rem; padding-bottom: 7rem; }
-.hero-content > .eyebrow { max-width: 42ch; line-height: 1.5; }
+.hero-content > .eyebrow { max-width: none; line-height: 1.5; white-space: nowrap; }
 .hero-statement { max-width: 23ch; line-height: 1.12; }
 .hero-sub { max-width: 40ch; white-space: normal; text-wrap: balance; line-height: 1.6; letter-spacing: .1em; }
 .hero-actions { flex-wrap: wrap; gap: 1.25rem 2rem; max-width: 660px; }
@@ -710,7 +710,7 @@ h2 em { color: var(--gold-light); font-weight: 500; }
   .hero h1 { font-size: clamp(3.4rem,14vw,5.3rem); line-height: .98; letter-spacing: -.045em; max-width: 100%; }
   .hero h1 span { font-size: .55em; margin-bottom: .12em; }
   .hero-statement { font-size: clamp(1.45rem,5.2vw,1.95rem); max-width: 100%; line-height: 1.18; margin-top: .8rem; }
-  .hero-content > .eyebrow { font-size: .72rem; letter-spacing: .13em; margin-bottom: 1.1rem; }
+  .hero-content > .eyebrow { font-size: clamp(.5rem,3vw,.72rem); letter-spacing: .1em; margin-bottom: 1.1rem; white-space: nowrap; }
   .hero-sub { font-size: .78rem; letter-spacing: .055em; max-width: 33ch; margin-top: .8rem; }
   .hero-actions { flex-direction: row; align-items: stretch; gap: .65rem; margin-top: 1.35rem; }
   .hero-actions .button, .hero-actions .text-link { font-size: .74rem; padding: .7rem .8rem; min-height: 44px; }
