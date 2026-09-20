@@ -1232,7 +1232,7 @@ h2 em { color: var(--gold-light); font-weight: 500; }
     </form>
   </dialog>
 
-  <audio data-background-music preload="none" src="media/asset-16142e34.mp3" aria-label="Background music: Maybe"></audio>
+  <audio data-background-music loop autoplay preload="auto" src="media/asset-16142e34.mp3" aria-label="Background music: Maybe"></audio>
   <button class="music-control" data-music-control type="button" hidden>Play music</button>
   <script>
 const header = document.querySelector("[data-header]");
@@ -1473,7 +1473,7 @@ tickerToggle?.addEventListener('click', () => {
   music.playbackRate = 1;
   music.preservesPitch = true;
   music.addEventListener('ratechange', () => { if(music.playbackRate !== 1) music.playbackRate = 1; });
-  let ready = Boolean(window.builtScrollReady), stopped = false, starting = false;
+  let ready = true, stopped = false, starting = false, pendingUnmute = false;
   let fadeFrame = 0, context = null, gain = null, source = null;
   const foregroundActive = () => [...document.querySelectorAll('audio,video')].some(media => media !== music && !media.paused && !media.ended);
   function prepareGain() {
@@ -1515,8 +1515,25 @@ tickerToggle?.addEventListener('click', () => {
       control.hidden = false; control.textContent = 'Mute music';
     }).catch(() => {
       starting = false;
-      if (!stopped) { control.hidden = false; control.textContent = 'Play music'; }
+      if (stopped) return;
+      // Browsers block audible autoplay without a gesture: start silently,
+      // then raise the volume the moment the visitor interacts.
+      music.muted = true;
+      music.play().then(() => {
+        if (stopped) { music.pause(); return; }
+        pendingUnmute = true;
+        control.hidden = false; control.textContent = 'Play music';
+      }).catch(() => {
+        control.hidden = false; control.textContent = 'Play music';
+      });
     });
+  }
+  function unmute() {
+    if (!pendingUnmute || stopped) return;
+    pendingUnmute = false;
+    music.muted = false;
+    if (music.paused) { start(); return; }
+    control.hidden = false; control.textContent = 'Mute music';
   }
   window.addEventListener('built-scroll-ready', () => { ready = true; start(); });
   document.addEventListener('play', event => {
@@ -1526,15 +1543,20 @@ tickerToggle?.addEventListener('click', () => {
   function gesture(event) {
     if (event.target.closest?.('audio,video,[data-music-control]')) return;
     if (event.type === 'keydown' && !['Enter',' '].includes(event.key)) return;
-    if (!stopped) { prepareGain(); start(); }
+    if (stopped) return;
+    prepareGain();
+    if (pendingUnmute) unmute(); else start();
   }
   document.addEventListener('pointerdown', gesture);
   document.addEventListener('keydown', gesture);
+  document.addEventListener('touchstart', gesture, { passive: true });
+  window.addEventListener('scroll', () => { if (!stopped) { prepareGain(); if (pendingUnmute) unmute(); else start(); } }, { passive: true, once: true });
   control.addEventListener('click', () => {
-    if (!music.paused) fadeOut(); else { prepareGain(); start(); }
+    if (pendingUnmute) { prepareGain(); unmute(); return; }
+    if (!music.paused && !music.muted) fadeOut(); else { prepareGain(); music.muted = false; start(); }
   });
-  music.addEventListener('ended', () => { stopped = true; control.hidden = true; });
   if (ready) start();
+  document.addEventListener('DOMContentLoaded', () => { if (!stopped && music.paused) start(); });
 })();
 
 </script>
