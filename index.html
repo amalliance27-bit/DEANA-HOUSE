@@ -1427,8 +1427,8 @@ if (dialog && form) {
         Notes: data.get("notes") || "None shared",
         Summary: summary
       })
-    }).then((response) => {
-      if (!response.ok) throw new Error("send failed");
+    }).then((response) => response.json().catch(() => ({}))).then((result) => {
+      if (String(result.success) !== "true") throw new Error(result.message || "send failed");
       if (status) status.textContent = "Sent to Deana. She will reply to the email you gave.";
     }).catch(() => {
       if (status) status.innerHTML = 'We could not send it automatically \u2014 use <b>Email this intake</b> below, or call (905) 906-4157.';
