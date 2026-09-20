@@ -1538,6 +1538,7 @@ tickerToggle?.addEventListener('click', () => {
   // Browsers forbid audible autoplay, but muted autoplay is allowed: roll the track
   // silently from load so the first tap, key or scroll only has to unmute it.
   music.muted = true;
+  control.hidden = false; control.textContent = 'Play music';
   music.play().then(() => { if (!stopped) { control.hidden = false; control.textContent = 'Play music'; } }).catch(() => {});
   let fadeFrame = 0, context = null, gain = null, source = null;
   const foregroundActive = () => [...document.querySelectorAll('audio,video')].some(media => media !== music && !media.paused && !media.ended);
@@ -1623,9 +1624,30 @@ tickerToggle?.addEventListener('click', () => {
   // programmatic scroll used to trip the unmute before any real gesture existed,
   // which left the track paused and audible-blocked instead of rolling silently.
   window.addEventListener('wheel', gesture, { passive: true });
+  // The pink button is the visitor's direct control: a click is a real gesture, so
+  // playback is always permitted here. It never routes through the autoplay
+  // fallbacks, and pausing with it is reversible (unlike the one-way fade used
+  // when another player takes over).
   control.addEventListener('click', () => {
-    if (pendingUnmute) { prepareGain(); unmute(); return; }
-    if (!music.paused && !music.muted) fadeOut(); else { prepareGain(); music.muted = false; start(); }
+    cancelAnimationFrame(fadeFrame);
+    const silent = music.paused || music.muted || (gain ? gain.gain.value : music.volume) === 0;
+    if (silent) {
+      stopped = false; ready = true; starting = false; pendingUnmute = false;
+      prepareGain();
+      music.muted = false;
+      level(1);
+      if (!gain) music.volume = 1;
+      music.play().then(() => {
+        control.textContent = 'Mute music';
+      }).catch(() => {
+        control.textContent = 'Play music';
+      });
+    } else {
+      music.pause();
+      music.muted = true;
+      pendingUnmute = false;
+      control.textContent = 'Play music';
+    }
   });
   if (ready) start();
   document.addEventListener('DOMContentLoaded', () => { if (!stopped && music.paused) start(); });
