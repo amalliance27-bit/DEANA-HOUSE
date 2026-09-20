@@ -1508,6 +1508,7 @@ tickerToggle?.addEventListener('click', () => {
   function start() {
     if (!ready || stopped || starting || !music.paused) return;
     if (foregroundActive()) { fadeOut(); return; }
+    if (!pendingUnmute) music.muted = false;
     starting = true;
     music.play().then(() => {
       starting = false;
@@ -1524,6 +1525,8 @@ tickerToggle?.addEventListener('click', () => {
         pendingUnmute = true;
         control.hidden = false; control.textContent = 'Play music';
       }).catch(() => {
+        // Silent autoplay is blocked too — reset so the first gesture plays audibly.
+        music.muted = false;
         control.hidden = false; control.textContent = 'Play music';
       });
     });
