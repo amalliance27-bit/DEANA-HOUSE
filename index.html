@@ -627,11 +627,11 @@ h2 em { color: var(--gold-light); font-weight: 500; }
 .splash-shade { position: absolute; inset: 0; background: linear-gradient(90deg,rgba(16,13,13,.9),rgba(16,13,13,.35)); }
 .splash-copy { position: relative; width: min(1160px,88%); margin: auto; }
 .splash-copy h1 { font-size: clamp(4rem,12vw,10rem); letter-spacing: -.04em; margin: 0 0 1.5rem; }
-.splash-copy > p:last-of-type { font-family: var(--display); font-size: clamp(1.8rem,4vw,3rem); color: var(--gold-light); }
+.splash-copy > p.splash-tagline { font-family: var(--display); font-size: clamp(1.8rem,4vw,3rem); color: var(--gold-light); }
 .splash-line { display: block; width: 130px; height: 2px; background: var(--gold); }
 .splash-enter { margin: 2.2rem 0 .9rem; display: inline-flex; align-items: center; gap: .7rem; padding: 1.05rem 2.6rem; background: var(--gold); color: #1a1010; border: 0; border-radius: 2px; cursor: pointer; font-family: var(--sans); font-size: .82rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; transition: background .3s ease, transform .3s ease; }
 .splash-enter:hover, .splash-enter:focus-visible { background: var(--gold-light); transform: translateY(-2px); }
-.splash-note { margin: 0; font-family: var(--sans); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(243,236,220,.62); }
+.splash-copy > p.splash-note { margin: 0; font-family: var(--sans); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(243,236,220,.62); }
 .eyebrow, .footer-label, .voice-intro p, .service-copy > span, .journal-card > span, .journal-card div > span, .yoga-photo-grid figcaption span { font-size: .88rem; }
 .button, .text-link, .text-button, .return-link, .article-nav a, .motion-button, .journal-card b { font-size: .88rem; }
 .site-nav > a { font-size: .86rem; letter-spacing: .045em; }
@@ -755,7 +755,7 @@ h2 em { color: var(--gold-light); font-weight: 500; }
   .footer-grid > div a, .footer-grid > div p { font-size: .9rem; }
   .footer-bottom { font-size: .75rem; letter-spacing: .04em; }
   .splash-copy h1 { font-size: clamp(2.8rem,12vw,4.5rem); line-height: 1.05; }
-  .splash-copy > p:last-of-type { font-size: 1.6rem; }
+  .splash-copy > p.splash-tagline { font-size: 1.6rem; }
 }
 
 .music-control { position: fixed; left: 1rem; bottom: 1rem; z-index: 45; padding: .6rem .9rem; border: 0; border-radius: 6px; background: #211719; color: var(--gold-light); font: inherit; font-size: .8rem; cursor: pointer; box-shadow: 0 3px 15px #0003; }
@@ -776,7 +776,7 @@ h2 em { color: var(--gold-light); font-weight: 500; }
 <body>
   <div class="welcome-splash" data-splash role="dialog" aria-label="Welcome to Built by D" aria-modal="true">
     <div class="splash-photo"></div><div class="splash-shade"></div>
-    <div class="splash-copy"><p class="eyebrow">Precision Physique · Deana Brady</p><h1>BUILT BY D</h1><p>Stronger at every age.</p><span class="splash-line" aria-hidden="true"></span>
+    <div class="splash-copy"><p class="eyebrow">Precision Physique · Deana Brady</p><h1>BUILT BY D</h1><p class="splash-tagline">Stronger at every age.</p><span class="splash-line" aria-hidden="true"></span>
       <button class="splash-enter" data-splash-enter type="button">Enter<span aria-hidden="true">&#8594;</span></button>
       <p class="splash-note">Best experienced with sound</p></div>
   </div>
