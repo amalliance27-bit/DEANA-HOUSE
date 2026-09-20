@@ -629,6 +629,9 @@ h2 em { color: var(--gold-light); font-weight: 500; }
 .splash-copy h1 { font-size: clamp(4rem,12vw,10rem); letter-spacing: -.04em; margin: 0 0 1.5rem; }
 .splash-copy > p:last-of-type { font-family: var(--display); font-size: clamp(1.8rem,4vw,3rem); color: var(--gold-light); }
 .splash-line { display: block; width: 130px; height: 2px; background: var(--gold); }
+.splash-enter { margin: 2.2rem 0 .9rem; display: inline-flex; align-items: center; gap: .7rem; padding: 1.05rem 2.6rem; background: var(--gold); color: #1a1010; border: 0; border-radius: 2px; cursor: pointer; font-family: var(--sans); font-size: .82rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; transition: background .3s ease, transform .3s ease; }
+.splash-enter:hover, .splash-enter:focus-visible { background: var(--gold-light); transform: translateY(-2px); }
+.splash-note { margin: 0; font-family: var(--sans); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(243,236,220,.62); }
 .eyebrow, .footer-label, .voice-intro p, .service-copy > span, .journal-card > span, .journal-card div > span, .yoga-photo-grid figcaption span { font-size: .88rem; }
 .button, .text-link, .text-button, .return-link, .article-nav a, .motion-button, .journal-card b { font-size: .88rem; }
 .site-nav > a { font-size: .86rem; letter-spacing: .045em; }
@@ -773,7 +776,9 @@ h2 em { color: var(--gold-light); font-weight: 500; }
 <body>
   <div class="welcome-splash" data-splash role="dialog" aria-label="Welcome to Built by D" aria-modal="true">
     <div class="splash-photo"></div><div class="splash-shade"></div>
-    <div class="splash-copy"><p class="eyebrow">Precision Physique · Deana Brady</p><h1>BUILT BY D</h1><p>Stronger at every age.</p><span class="splash-line" aria-hidden="true"></span></div>
+    <div class="splash-copy"><p class="eyebrow">Precision Physique · Deana Brady</p><h1>BUILT BY D</h1><p>Stronger at every age.</p><span class="splash-line" aria-hidden="true"></span>
+      <button class="splash-enter" data-splash-enter type="button">Enter<span aria-hidden="true">&#8594;</span></button>
+      <p class="splash-note">Best experienced with sound</p></div>
   </div>
   <a class="skip-link" href="#home-view">Skip to content</a>
 
@@ -1432,7 +1437,11 @@ tickerToggle?.addEventListener('click', () => {
     document.body.classList.add('splash-open');
     [...document.body.children].forEach(el => { if(el !== splash && el.tagName !== 'SCRIPT' && !el.inert) { el.inert = true; el.setAttribute('data-splash-inert',''); } });
     window.scrollTo({top:0,behavior:'instant'}); position = 0;
-    setTimeout(finishSplash, 6200);
+    const enter = splash.querySelector('[data-splash-enter]');
+    // The click is the gesture browsers require before audio may play aloud.
+    enter?.addEventListener('click', () => { window.dispatchEvent(new Event('built-splash-enter')); finishSplash(); });
+    setTimeout(() => enter?.focus({preventScroll:true}), 400);
+    setTimeout(finishSplash, 14000);
   } else { splash?.remove(); ready = true; window.builtScrollReady = true; }
   function tick(time) {
     const dt = previous ? Math.min((time - previous)/1000, .05) : 0; previous = time;
@@ -1553,6 +1562,7 @@ tickerToggle?.addEventListener('click', () => {
   document.addEventListener('pointerdown', gesture);
   document.addEventListener('keydown', gesture);
   document.addEventListener('touchstart', gesture, { passive: true });
+  window.addEventListener('built-splash-enter', () => { if (!stopped) { prepareGain(); if (pendingUnmute) unmute(); else start(); } });
   window.addEventListener('scroll', () => { if (!stopped) { prepareGain(); if (pendingUnmute) unmute(); else start(); } }, { passive: true, once: true });
   control.addEventListener('click', () => {
     if (pendingUnmute) { prepareGain(); unmute(); return; }
