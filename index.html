@@ -767,6 +767,13 @@ h2 em { color: var(--gold-light); font-weight: 500; }
 
 .music-control { position: fixed; left: 1rem; bottom: 1rem; z-index: 45; padding: .62rem 1rem; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; background: linear-gradient(135deg,#e8a0bc,#c65982); color: #2a0d18; font: inherit; font-size: .8rem; font-weight: 600; letter-spacing: .04em; cursor: pointer; box-shadow: 0 6px 20px rgba(198,89,130,.35); transition: background .25s ease, transform .25s ease; }
 .music-control:hover, .music-control:focus-visible { background: linear-gradient(135deg,#f3b6cd,#d76a93); transform: translateY(-1px); }
+.contact-direct { margin-top: 3rem; padding-top: 2.2rem; border-top: 1px solid rgba(208,166,90,.28); }
+.contact-direct .eyebrow { margin-bottom: 1.1rem; }
+.contact-direct-actions { display: flex; flex-wrap: wrap; gap: .85rem; }
+.button-ghost { background: transparent; border: 1px solid rgba(208,166,90,.6); color: var(--gold-light); }
+.button-ghost:hover, .button-ghost:focus-visible { background: rgba(208,166,90,.14); border-color: var(--gold); }
+.contact-direct-note { margin: 1.3rem 0 0; color: rgba(243,236,220,.62); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; }
+@media (max-width: 560px) { .contact-direct-actions { flex-direction: column; align-items: stretch; } .contact-direct-actions .button { text-align: center; } }
 .music-control[hidden], .modal-open .music-control { display: none; }
 
 </style>
@@ -776,6 +783,8 @@ h2 em { color: var(--gold-light); font-weight: 500; }
     "@type": "ProfessionalService",
     "name": "Precision Physique — Built by D",
     "founder": {"@type": "Person", "name": "Deana Brady"},
+    "email": "deanambrady@hotmail.com",
+    "telephone": "+1-905-906-4157",
     "areaServed": {"@type": "City", "name": "Hamilton, Ontario"},
     "serviceType": ["Personal training", "Online coaching", "Women's strength coaching", "Fitness programs"]
   }
@@ -985,6 +994,15 @@ h2 em { color: var(--gold-light); font-weight: 500; }
         <h2>Tell Deana what you want to achieve.</h2>
         <p>Choose your goal. Share your starting point. Receive a path built for you.</p>
         <button class="button" type="button" data-open-intake>Start the consultation intake</button>
+        <div class="contact-direct">
+          <p class="eyebrow">Or reach Deana directly</p>
+          <div class="contact-direct-actions">
+            <a class="button button-ghost" href="tel:+19059064157">Call (905) 906-4157</a>
+            <a class="button button-ghost" href="sms:+19059064157?&amp;body=Hi%20Deana%2C%20I%27d%20like%20to%20ask%20about%20coaching.">Send a text</a>
+            <a class="button button-ghost" href="mailto:deanambrady@hotmail.com?subject=Coaching%20enquiry&amp;body=Hi%20Deana%2C">Leave a message</a>
+          </div>
+          <p class="contact-direct-note">Hamilton, Ontario &middot; in person and online &middot; replies within one business day</p>
+        </div>
       </div>
     </section>
 
@@ -1170,7 +1188,7 @@ h2 em { color: var(--gold-light); font-weight: 500; }
       <a class="brand footer-brand" href="#top"><span class="brand-mark">D</span><span><b>BUILT BY D</b><small>Precision Physique</small></span></a>
       <div><span class="footer-label">Coaching</span><a href="#services">Personal training</a><a href="#services">Online coaching</a><a href="#services">Programs</a></div>
       <div><span class="footer-label">Read</span><a href="#training">Training</a><a href="#nutrition">Nutrition</a><a href="#women">Women's strength</a></div>
-      <div><span class="footer-label">Location</span><p>Hamilton, Ontario<br>Online coaching available</p></div>
+      <div><span class="footer-label">Contact</span><a href="mailto:deanambrady@hotmail.com">deanambrady@hotmail.com</a><a href="tel:+19059064157">(905) 906-4157</a><p>Hamilton, Ontario<br>Online coaching available</p></div>
     </div>
     <div class="shell footer-social" aria-label="Social profiles awaiting Deana’s links">
       <span>Follow the journey</span>
@@ -1237,8 +1255,9 @@ h2 em { color: var(--gold-light); font-weight: 500; }
       <section class="form-success" data-success aria-live="polite">
         <span class="success-mark">D</span>
         <p class="eyebrow dark">Intake complete</p>
-        <h3>Your consultation brief is ready.</h3>
-        <p>Copy it or open it in your email app, then send it through Deana’s preferred contact channel.</p>
+        <h3>Your consultation brief is on its way.</h3>
+        <p data-send-status aria-live="polite">Sending your intake to Deana…</p>
+        <p>She replies from <a href="mailto:deanambrady@hotmail.com">deanambrady@hotmail.com</a>, usually within one business day. You can also call or text <a href="tel:+19059064157">(905) 906-4157</a>.</p>
         <textarea class="summary-box" rows="9" readonly data-summary></textarea>
         <div class="form-actions stacked-mobile"><button class="text-button" type="button" data-copy-summary>Copy intake</button><a class="button" href="#" data-email-summary>Email this intake</a></div>
       </section>
@@ -1386,8 +1405,34 @@ if (dialog && form) {
     const emailLink = form.querySelector("[data-email-summary]");
     if (summaryBox) summaryBox.value = summary;
     if (emailLink) {
-      emailLink.href = `mailto:?subject=${encodeURIComponent("Built by D consultation request")}&body=${encodeURIComponent(summary)}`;
+      emailLink.href = `mailto:deanambrady@hotmail.com?subject=${encodeURIComponent("Built by D consultation request")}&body=${encodeURIComponent(summary)}`;
     }
+    const status = form.querySelector("[data-send-status]");
+    fetch("https://formsubmit.co/ajax/deanambrady@hotmail.com", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        _subject: `Consultation request \u2014 ${fullName}`,
+        _template: "table",
+        _captcha: "false",
+        Name: fullName,
+        Email: data.get("email"),
+        Phone: data.get("phone") || "Prefers email",
+        Goals: goals,
+        Coaching: data.get("service"),
+        Experience: data.get("experience"),
+        "Age range": data.get("ageRange"),
+        Availability: data.get("days"),
+        "90-day success": data.get("success"),
+        Notes: data.get("notes") || "None shared",
+        Summary: summary
+      })
+    }).then((response) => {
+      if (!response.ok) throw new Error("send failed");
+      if (status) status.textContent = "Sent to Deana. She will reply to the email you gave.";
+    }).catch(() => {
+      if (status) status.innerHTML = 'We could not send it automatically \u2014 use <b>Email this intake</b> below, or call (905) 906-4157.';
+    });
     steps.forEach((step) => step.classList.remove("active"));
     success?.classList.add("active");
     if (progress) progress.style.width = "100%";
